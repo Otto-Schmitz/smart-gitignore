@@ -1,0 +1,61 @@
+# Dependencies
+vendor/bundle/
+.bundle/
+
+# Ruby version managers
+.ruby-version
+.ruby-gemset
+.rvmrc
+
+# Logs
+*.log
+log/
+tmp/
+
+# Rails
+*.sqlite3
+*.sqlite3-journal
+config/database.yml
+config/secrets.yml
+config/master.key
+db/*.sqlite3
+db/*.sqlite3-journal
+db/schema.rb
+db/structure.sql
+storage/
+tmp/
+.byebug_history
+
+# Rack
+config.ru
+
+# Bundler
+Gemfile.lock
+.bundle/
+
+# Coverage
+coverage/
+.nyc_output/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build
+dist/
+build/
+pkg/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+

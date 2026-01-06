@@ -1,0 +1,51 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Gradle Wrapper
+gradle-wrapper.jar
+gradle-wrapper.properties
+
+# Gradle cache
+.gradle
+gradle-app.setting
+!gradle-app.setting
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# VS Code
+.vscode/
+
+# Build output
+build/
+dist/
+out/
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+

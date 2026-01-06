@@ -1,0 +1,62 @@
+# Dependencies
+vendor/
+composer.lock
+
+# Laravel
+bootstrap/cache/
+storage/*.key
+storage/framework/cache/
+storage/framework/sessions/
+storage/framework/views/
+storage/logs/
+.phpunit.result.cache
+
+# Symfony
+var/
+var/cache/
+var/log/
+var/sessions/
+var/tmp/
+
+# WordPress
+wp-config.php
+wp-content/uploads/
+wp-content/blogs.dir/
+wp-content/upgrade/
+wp-content/backup-db/
+wp-content/advanced-cache.php
+wp-content/wp-cache-config.php
+wp-content/cache/
+wp-content/cache/supercache/
+
+# Composer
+composer.phar
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Build
+dist/
+build/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+

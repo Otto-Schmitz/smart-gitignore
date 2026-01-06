@@ -1,0 +1,50 @@
+{
+  "name": "smart-gitignore",
+  "version": "1.0.0",
+  "description": "Gerador inteligente de arquivos .gitignore baseado na detecção automática da stack do projeto",
+  "main": "dist/index.js",
+  "bin": {
+    "smart-gitignore": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "gitignore",
+    "git",
+    "cli",
+    "automation",
+    "developer-tools"
+  ],
+  "author": "Otto Schmitz - ottosschmitz@gmail.com",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Otto-Schmitz/smart-gitignore.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Otto-Schmitz/smart-gitignore/issues"
+  },
+  "homepage": "https://github.com/Otto-Schmitz/smart-gitignore#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "dist",
+    "templates",
+    "README.md",
+    "LICENSE"
+  ],
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "commander": "^11.1.0"
+  }
+}
+

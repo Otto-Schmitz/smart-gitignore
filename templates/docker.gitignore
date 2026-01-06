@@ -1,0 +1,14 @@
+# Docker
+*.dockerignore
+.docker/
+
+# Docker Compose
+docker-compose.override.yml
+docker-compose.*.local.yml
+
+# Docker volumes
+*.volume
+
+# Docker build context
+.dockerignore
+
