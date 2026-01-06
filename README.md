@@ -7,14 +7,15 @@ Gerador inteligente de arquivos `.gitignore` baseado na detecção automática d
 
 ## 🎯 Propósito
 
-O `smart-gitignore` analisa automaticamente o diretório do seu projeto, detecta as tecnologias utilizadas (Java, Node.js, Docker, Ruby, IDEs, etc.) e gera ou atualiza um arquivo `.gitignore` apropriado usando a API do [gitignore.io](https://www.toptal.com/developers/gitignore), com fallback para templates locais.
+O `smart-gitignore` analisa automaticamente o diretório do seu projeto, detecta as tecnologias utilizadas (Java, Node.js, Docker, Ruby, IDEs, etc.) e gera ou atualiza um arquivo `.gitignore` apropriado usando os templates do [GitHub/gitignore](https://github.com/github/gitignore) (fonte principal), com fallback para [gitignore.io](https://www.toptal.com/developers/gitignore) e templates locais.
 
 ### Por que usar?
 
 - ✅ **Detecção automática**: Não precisa saber quais stacks adicionar manualmente
 - ✅ **Merge inteligente**: Preserva comentários e regras existentes
 - ✅ **Sem duplicatas**: Remove automaticamente entradas duplicadas
-- ✅ **Fallback robusto**: Funciona mesmo sem conexão com a internet
+- ✅ **Fallback robusto**: GitHub → gitignore.io → templates locais
+- ✅ **Templates atualizados**: Usa os templates oficiais do GitHub/gitignore
 - ✅ **Extensível**: Fácil de adicionar novas detecções
 
 ## 🚀 Como Usar

@@ -53,19 +53,10 @@ async function run(options: { dir: string; force: boolean; verbose: boolean }) {
 
   // 3. Gerar conteúdo
   if (verbose) {
-    console.log('🌐 Buscando template do gitignore.io...');
+    console.log('🌐 Buscando templates do GitHub/gitignore...');
   }
 
   const generator = new Generator();
-  
-  // Filtra stacks válidas antes de gerar (para mostrar apenas as que serão usadas)
-  const validStacks = generator.filterValidStacks(detectedStacks);
-  if (validStacks.length < detectedStacks.length && verbose) {
-    const invalidStacks = detectedStacks.filter(s => !validStacks.includes(s));
-    console.log(`ℹ️  Stacks filtradas (não válidas na API): ${invalidStacks.join(', ')}`);
-    console.log(`📋 Usando stacks válidas: ${validStacks.join(', ')}`);
-  }
-  
   const newContent = await generator.generate(detectedStacks);
 
   // 4. Fazer merge se necessário

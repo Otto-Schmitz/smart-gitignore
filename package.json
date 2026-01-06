@@ -1,6 +1,6 @@
 {
   "name": "smart-gitignore",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Gerador inteligente de arquivos .gitignore baseado na detecção automática da stack do projeto",
   "main": "dist/index.js",
   "bin": {
