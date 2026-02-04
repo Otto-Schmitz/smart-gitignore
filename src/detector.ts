@@ -1,12 +1,12 @@
 import { Scanner } from './scanner';
 
 /**
- * Mapeia arquivos e diretórios encontrados para stacks tecnológicas
+ * Maps found files and directories to technology stacks
  */
 export class Detector {
   private readonly scanner: Scanner;
 
-  // Mapeamento de arquivos/diretórios para stacks
+  // Mapping of files/directories to stacks
   private readonly detectionMap: Map<string, string[]> = new Map([
     // Java & Build Tools
     ['pom.xml', ['java', 'maven']],
@@ -20,8 +20,8 @@ export class Detector {
     // Node.js
     ['package.json', ['node']],
     ['yarn.lock', ['node', 'yarn']],
-    ['pnpm-lock.yaml', ['node']], // pnpm não é stack válida na API, mas node cobre
-    ['package-lock.json', ['node']], // npm não é stack válida na API, mas node cobre
+    ['pnpm-lock.yaml', ['node']], // pnpm is not a valid stack in API, but node covers it
+    ['package-lock.json', ['node']], // npm is not a valid stack in API, but node covers it
     ['node_modules', ['node']],
     
     // Docker
@@ -81,7 +81,7 @@ export class Detector {
   }
 
   /**
-   * Detecta todas as stacks baseado nos arquivos encontrados
+   * Detects all stacks based on found files
    */
   public detectStacks(): string[] {
     const foundFiles = this.scanner.scan();
@@ -94,35 +94,35 @@ export class Detector {
       }
     }
 
-    // Detecções adicionais baseadas em padrões
+    // Additional detections based on patterns
     this.detectByPattern(foundFiles, detectedStacks);
 
     return Array.from(detectedStacks).sort();
   }
 
   /**
-   * Detecções adicionais baseadas em padrões de nomes
+   * Additional detections based on name patterns
    */
   private detectByPattern(files: string[], stacks: Set<string>): void {
-    // Detecta sistema operacional baseado em arquivos específicos
+    // Detect operating system based on specific files
     if (files.some(f => f === '.DS_Store' || f === 'Thumbs.db')) {
-      // macOS e Windows são detectados automaticamente pelo gitignore.io
-      // mas podemos adicionar explicitamente se necessário
+      // macOS and Windows are automatically detected by gitignore.io
+      // but we can add explicitly if needed
     }
 
-    // Detecta Java por extensão de arquivo
+    // Detect Java by file extension
     if (files.some(f => f.endsWith('.java'))) {
       stacks.add('java');
     }
 
-    // Detecta TypeScript
+    // Detect TypeScript
     if (files.some(f => f === 'tsconfig.json' || f.endsWith('.ts'))) {
       stacks.add('node');
     }
   }
 
   /**
-   * Retorna o mapeamento de detecção (útil para debug)
+   * Returns the detection mapping (useful for debugging)
    */
   public getDetectionMap(): Map<string, string[]> {
     return new Map(this.detectionMap);

@@ -3,70 +3,70 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
 
-Gerador inteligente de arquivos `.gitignore` baseado na detecção automática da stack tecnológica do projeto.
+Smart `.gitignore` generator based on automatic detection of your project's technology stack.
 
-## 🎯 Propósito
+## 🎯 Purpose
 
-O `smart-gitignore` analisa automaticamente o diretório do seu projeto, detecta as tecnologias utilizadas (Java, Node.js, Docker, Ruby, IDEs, etc.) e gera ou atualiza um arquivo `.gitignore` apropriado usando os templates do [GitHub/gitignore](https://github.com/github/gitignore) (fonte principal), com fallback para [gitignore.io](https://www.toptal.com/developers/gitignore) e templates locais.
+`smart-gitignore` automatically analyzes your project directory, detects the technologies used (Java, Node.js, Docker, Ruby, IDEs, etc.) and generates or updates an appropriate `.gitignore` file using templates from [GitHub/gitignore](https://github.com/github/gitignore) (primary source), with fallback to [gitignore.io](https://www.toptal.com/developers/gitignore) and local templates.
 
-### Por que usar?
+### Why use it?
 
-- ✅ **Detecção automática**: Não precisa saber quais stacks adicionar manualmente
-- ✅ **Merge inteligente**: Preserva comentários e regras existentes
-- ✅ **Sem duplicatas**: Remove automaticamente entradas duplicadas
-- ✅ **Fallback robusto**: GitHub → gitignore.io → templates locais
-- ✅ **Templates atualizados**: Usa os templates oficiais do GitHub/gitignore
-- ✅ **Extensível**: Fácil de adicionar novas detecções
+- ✅ **Automatic detection**: No need to know which stacks to add manually
+- ✅ **Smart merge**: Preserves existing comments and rules
+- ✅ **No duplicates**: Automatically removes duplicate entries
+- ✅ **Robust fallback**: GitHub → gitignore.io → local templates
+- ✅ **Updated templates**: Uses official GitHub/gitignore templates
+- ✅ **Extensible**: Easy to add new detections
 
-## 🚀 Como Usar
+## 🚀 How to Use
 
-### Instalação Global (Opcional)
+### Global Installation (Optional)
 
 ```bash
 npm install -g smart-gitignore
 ```
 
-### Uso via npx (Recomendado)
+### Usage via npx (Recommended)
 
 ```bash
 npx smart-gitignore
 ```
 
-### Opções
+### Options
 
 ```bash
-npx smart-gitignore [opções]
+npx smart-gitignore [options]
 
-Opções:
-  -d, --dir <path>    Diretório para escanear (padrão: diretório atual)
-  -f, --force         Sobrescrever .gitignore existente sem fazer merge
-  -v, --verbose       Modo verboso
-  -h, --help          Exibir ajuda
-  -V, --version       Exibir versão
+Options:
+  -d, --dir <path>    Directory to scan (default: current directory)
+  -f, --force         Overwrite existing .gitignore without merging
+  -v, --verbose       Verbose mode
+  -h, --help          Display help
+  -V, --version       Display version
 ```
 
-### Exemplos
+### Examples
 
 ```bash
-# Gerar .gitignore no diretório atual
+# Generate .gitignore in current directory
 npx smart-gitignore
 
-# Escanear diretório específico
-npx smart-gitignore --dir /caminho/do/projeto
+# Scan specific directory
+npx smart-gitignore --dir /path/to/project
 
-# Sobrescrever .gitignore existente
+# Overwrite existing .gitignore
 npx smart-gitignore --force
 
-# Modo verboso para debug
+# Verbose mode for debugging
 npx smart-gitignore --verbose
 ```
 
-## 🔍 Detecção de Stacks
+## 🔍 Stack Detection
 
-O `smart-gitignore` detecta automaticamente as seguintes tecnologias:
+`smart-gitignore` automatically detects the following technologies:
 
-### Linguagens & Frameworks
-- **Java**: `pom.xml`, `build.gradle`, arquivos `.java`
+### Languages & Frameworks
+- **Java**: `pom.xml`, `build.gradle`, `.java` files
 - **Node.js**: `package.json`, `yarn.lock`, `pnpm-lock.yaml`, `package-lock.json`
 - **Ruby**: `Gemfile`, `Rakefile`, `.ruby-version`
 - **Python**: `requirements.txt`, `Pipfile`, `pyproject.toml`, `manage.py`
@@ -75,7 +75,7 @@ O `smart-gitignore` detecta automaticamente as seguintes tecnologias:
 - **PHP**: `composer.json`, `composer.lock`
 - **.NET**: `.csproj`, `.sln`, `project.json`
 
-### Ferramentas & Ambientes
+### Tools & Environments
 - **Maven**: `pom.xml`
 - **Gradle**: `build.gradle`, `settings.gradle`
 - **Docker**: `Dockerfile`, `docker-compose.yml`
@@ -88,132 +88,132 @@ O `smart-gitignore` detecta automaticamente as seguintes tecnologias:
 - **VS Code**: `.vscode/`
 - **Eclipse**: `.eclipse/`, `.settings/`, `.project`, `.classpath`
 
-### Outros
+### Others
 - **dotenv**: `.env`, `.env.local`, `.env.development`, `.env.production`
 
-## 📁 Estrutura do Projeto
+## 📁 Project Structure
 
 ```
 smart-gitignore/
 ├── src/
-│   ├── scanner.ts        # Detecção de arquivos no diretório
-│   ├── detector.ts       # Mapeamento arquivo → stack
-│   ├── generator.ts      # Chamada à API + fallback
-│   ├── merger.ts         # Merge seguro do .gitignore
-│   └── index.ts          # Entrypoint CLI
-├── templates/            # Templates fallback locais
+│   ├── scanner.ts        # File detection in directory
+│   ├── detector.ts       # File → stack mapping
+│   ├── generator.ts      # API call + fallback
+│   ├── merger.ts         # Safe .gitignore merge
+│   └── index.ts          # CLI entrypoint
+├── templates/            # Local fallback templates
 │   ├── default.gitignore
 │   ├── node.gitignore
 │   └── java.gitignore
-├── dist/                 # Código compilado (gerado)
+├── dist/                 # Compiled code (generated)
 ├── package.json
 ├── tsconfig.json
 ├── README.md
 └── LICENSE
 ```
 
-## 🔧 Desenvolvimento
+## 🔧 Development
 
-### Pré-requisitos
+### Prerequisites
 
 - Node.js >= 18.0.0
-- npm ou yarn
+- npm or yarn
 
 ### Setup
 
 ```bash
-# Clonar o repositório
-git clone https://github.com/seu-usuario/smart-gitignore.git
+# Clone the repository
+git clone https://github.com/Otto-Schmitz/smart-gitignore.git
 cd smart-gitignore
 
-# Instalar dependências
+# Install dependencies
 npm install
 
-# Compilar TypeScript
+# Compile TypeScript
 npm run build
 
-# Executar localmente
+# Run locally
 npm run dev
 ```
 
-### Scripts Disponíveis
+### Available Scripts
 
 ```bash
-npm run build      # Compila TypeScript para JavaScript
-npm run start      # Executa a versão compilada
-npm run dev        # Executa com ts-node (desenvolvimento)
+npm run build      # Compile TypeScript to JavaScript
+npm run start      # Run compiled version
+npm run dev        # Run with ts-node (development)
 ```
 
 ## 🗺️ Roadmap
 
-### Versão 1.0 (MVP) ✅
-- [x] Detecção automática de stacks
-- [x] Integração com API gitignore.io
-- [x] Fallback para templates locais
-- [x] Merge inteligente de .gitignore existente
-- [x] Remoção de duplicatas
-- [x] Preservação de comentários do usuário
+### Version 1.0 (MVP) ✅
+- [x] Automatic stack detection
+- [x] Integration with gitignore.io API
+- [x] Fallback to local templates
+- [x] Smart merge of existing .gitignore
+- [x] Duplicate removal
+- [x] User comment preservation
 
-### Versão 1.1 (Planejado)
-- [ ] Suporte para mais linguagens (Kotlin, Swift, Dart, etc.)
-- [ ] Cache de templates da API
-- [ ] Modo interativo para seleção de stacks
-- [ ] Validação de .gitignore existente
+### Version 1.1 (Planned)
+- [ ] Support for more languages (Kotlin, Swift, Dart, etc.)
+- [ ] API template caching
+- [ ] Interactive mode for stack selection
+- [ ] Existing .gitignore validation
 
-### Versão 2.0 (Futuro)
-- [ ] Extensão para VS Code
-- [ ] Plugin para IntelliJ IDEA
-- [ ] Integração com Git hooks
-- [ ] API REST para uso em CI/CD
-- [ ] Suporte para múltiplos .gitignore (subdiretórios)
+### Version 2.0 (Future)
+- [ ] VS Code extension
+- [ ] IntelliJ IDEA plugin
+- [ ] Git hooks integration
+- [ ] REST API for CI/CD usage
+- [ ] Support for multiple .gitignore files (subdirectories)
 
-## 🤝 Como Contribuir
+## 🤝 Contributing
 
-Contribuições são bem-vindas! Sinta-se à vontade para:
+Contributions are welcome! Feel free to:
 
-1. **Reportar bugs**: Abra uma [issue](https://github.com/seu-usuario/smart-gitignore/issues) descrevendo o problema
-2. **Sugerir features**: Compartilhe suas ideias em uma issue
-3. **Enviar PRs**: 
-   - Fork o projeto
-   - Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
-   - Commit suas mudanças (`git commit -m 'Adiciona nova feature'`)
-   - Push para a branch (`git push origin feature/nova-feature`)
-   - Abra um Pull Request
+1. **Report bugs**: Open an [issue](https://github.com/Otto-Schmitz/smart-gitignore/issues) describing the problem
+2. **Suggest features**: Share your ideas in an issue
+3. **Submit PRs**: 
+   - Fork the project
+   - Create a branch for your feature (`git checkout -b feature/new-feature`)
+   - Commit your changes (`git commit -m 'Add new feature'`)
+   - Push to the branch (`git push origin feature/new-feature`)
+   - Open a Pull Request
 
-### Adicionando Novas Detecções
+### Adding New Detections
 
-Para adicionar uma nova detecção de stack, edite `src/detector.ts`:
+To add a new stack detection, edit `src/detector.ts`:
 
 ```typescript
 private readonly detectionMap: Map<string, string[]> = new Map([
-  // ... detecções existentes
-  ['seu-arquivo.ext', ['sua-stack']],
+  // ... existing detections
+  ['your-file.ext', ['your-stack']],
 ]);
 ```
 
-### Adicionando Templates Locais
+### Adding Local Templates
 
-Adicione arquivos `.gitignore` na pasta `templates/` com o nome da stack:
+Add `.gitignore` files in the `templates/` folder with the stack name:
 
 ```
 templates/
-  └── sua-stack.gitignore
+  └── your-stack.gitignore
 ```
 
-## 📝 Licença
+## 📝 License
 
-Este projeto está licenciado sob a [MIT License](LICENSE).
+This project is licensed under the [MIT License](LICENSE).
 
-## 🙏 Agradecimentos
+## 🙏 Acknowledgments
 
-- [gitignore.io](https://www.toptal.com/developers/gitignore) pela API e templates
-- Comunidade open-source por inspiração e feedback
+- [GitHub/gitignore](https://github.com/github/gitignore) for the official templates
+- [gitignore.io](https://www.toptal.com/developers/gitignore) for the API and templates
+- Open-source community for inspiration and feedback
 
-## 📧 Contato
+## 📧 Contact
 
-Para dúvidas, sugestões ou problemas, abra uma [issue](https://github.com/seu-usuario/smart-gitignore/issues) no GitHub.
+For questions, suggestions, or issues, open an [issue](https://github.com/Otto-Schmitz/smart-gitignore/issues) on GitHub.
 
 ---
 
-Feito com ❤️ pela comunidade open-source
-
+Made with ❤️ by the open-source community

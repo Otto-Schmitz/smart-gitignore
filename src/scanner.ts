@@ -2,8 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 /**
- * Escaneia o diretório atual procurando por arquivos e diretórios
- * que indicam a stack tecnológica do projeto
+ * Scans the current directory looking for files and directories
+ * that indicate the project's technology stack
  */
 export class Scanner {
   private readonly rootDir: string;
@@ -13,7 +13,7 @@ export class Scanner {
   }
 
   /**
-   * Escaneia o diretório e retorna lista de arquivos encontrados
+   * Scans the directory and returns list of found files
    */
   public scan(): string[] {
     const foundFiles: string[] = [];
@@ -21,7 +21,7 @@ export class Scanner {
     try {
       const entries = fs.readdirSync(this.rootDir, { withFileTypes: true });
       
-      // Lista de arquivos/diretórios ocultos que devem ser incluídos para detecção
+      // List of hidden files/directories that should be included for detection
       const allowedHiddenFiles = [
         '.env', '.env.local', '.env.development', '.env.production',
         '.idea', '.vscode', '.dockerignore', '.ruby-version',
@@ -31,7 +31,7 @@ export class Scanner {
       for (const entry of entries) {
         const fullPath = path.join(this.rootDir, entry.name);
         
-        // Ignora arquivos ocultos (exceto os importantes para detecção)
+        // Ignore hidden files (except those important for detection)
         if (entry.name.startsWith('.') && 
             !allowedHiddenFiles.includes(entry.name)) {
           continue;
@@ -44,14 +44,14 @@ export class Scanner {
         }
       }
     } catch (error) {
-      throw new Error(`Erro ao escanear diretório: ${error}`);
+      throw new Error(`Error scanning directory: ${error}`);
     }
     
     return foundFiles;
   }
 
   /**
-   * Verifica se um arquivo ou diretório existe
+   * Checks if a file or directory exists
    */
   public exists(fileOrDir: string): boolean {
     const fullPath = path.join(this.rootDir, fileOrDir);
@@ -59,7 +59,7 @@ export class Scanner {
   }
 
   /**
-   * Retorna o caminho completo de um arquivo ou diretório
+   * Returns the full path of a file or directory
    */
   public getFullPath(fileOrDir: string): string {
     return path.join(this.rootDir, fileOrDir);
