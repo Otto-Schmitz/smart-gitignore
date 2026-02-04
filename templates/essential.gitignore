@@ -36,3 +36,12 @@ lerna-debug.log*
 *.tmp
 *.temp
 .cache/
+
+# Customs
+# This is a suggestion section where you can add any other ignore patterns
+# that were not detected or supported automatically by smart-gitignore.
+# Feel free to customize below:
+# Example:
+# build/
+# *.bak
+# lol_this_is_my_super_secret_credential_file.json

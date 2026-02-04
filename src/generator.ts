@@ -147,7 +147,7 @@ Thumbs.db
         const validStacks = this.filterValidStacks(stacks);
         if (validStacks.length > 0) {
           const apiContent = await this.fetchFromAPI(validStacks);
-          return this.mergeTemplates([essentialBlock, apiContent]);
+          return this.mergeTemplates([apiContent, essentialBlock]);
         }
       } catch (apiError) {
         console.warn(`⚠️  Error fetching from gitignore.io API: ${apiError}`);
