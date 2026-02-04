@@ -143,30 +143,6 @@ npm run build      # Compile TypeScript to JavaScript
 npm run start      # Run compiled version
 npm run dev        # Run with ts-node (development)
 ```
-
-## 🗺️ Roadmap
-
-### Version 1.0 (MVP) ✅
-- [x] Automatic stack detection
-- [x] Integration with gitignore.io API
-- [x] Fallback to local templates
-- [x] Smart merge of existing .gitignore
-- [x] Duplicate removal
-- [x] User comment preservation
-
-### Version 1.1 (Planned)
-- [ ] Support for more languages (Kotlin, Swift, Dart, etc.)
-- [ ] API template caching
-- [ ] Interactive mode for stack selection
-- [ ] Existing .gitignore validation
-
-### Version 2.0 (Future)
-- [ ] VS Code extension
-- [ ] IntelliJ IDEA plugin
-- [ ] Git hooks integration
-- [ ] REST API for CI/CD usage
-- [ ] Support for multiple .gitignore files (subdirectories)
-
 ## 🤝 Contributing
 
 Contributions are welcome! Feel free to:
