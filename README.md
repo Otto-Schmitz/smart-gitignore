@@ -186,6 +186,17 @@ This project is licensed under the [MIT License](LICENSE).
 - [gitignore.io](https://www.toptal.com/developers/gitignore) for the API and templates
 - Open-source community for inspiration and feedback
 
+## 🌐 GitHub Pages
+
+The repo includes a dedicated page in `docs/` for [GitHub Pages](https://pages.github.com/):
+
+1. In the repository, go to **Settings** → **Pages**.
+2. Under **Source**, choose **Deploy from a branch**.
+3. Under **Branch**, select `main` and the **/docs** folder.
+4. Save. The page will be available at `https://<your-username>.github.io/smart-gitignore/`.
+
+The page includes a project overview, how to use, and a **commit history** in real time (via GitHub API).
+
 ## 📧 Contact
 
 For questions, suggestions, or issues, open an [issue](https://github.com/Otto-Schmitz/smart-gitignore/issues) on GitHub.
