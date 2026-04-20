@@ -1,6 +1,6 @@
 {
   "name": "smart-gitignore",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Smart .gitignore generator with automatic stack detection",
   "main": "dist/index.js",
   "bin": {

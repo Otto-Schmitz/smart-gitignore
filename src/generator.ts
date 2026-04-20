@@ -48,12 +48,20 @@ export class Generator {
    * Generates .gitignore content for the provided stacks.
    * Priority: GitHub -> gitignore.io -> local templates.
    * Essential rules (.env, OS, IDEs, ...) are always included.
+   *
+   * INVARIANT: every code path MUST go through `assemble()` so the
+   * essential block is always FIRST. Because `mergeBlocks` keeps the first
+   * occurrence of duplicate comments and patterns, putting the essential
+   * block first guarantees that our customised essential comments
+   * (e.g. "# Customs", "# Environment ...") win over generic equivalents
+   * coming from the GitHub or gitignore.io payloads — yielding a
+   * deterministic output regardless of which fallback path succeeded.
    */
   public async generate(stacks: string[]): Promise<string> {
     const essentialBlock = `# Essential (OS, IDEs, env, logs)\n${this.getEssentialTemplate()}`;
 
     if (stacks.length === 0) {
-      return this.mergeTemplates([essentialBlock, this.getFallbackTemplate('default')]);
+      return this.assemble(essentialBlock, [this.getFallbackTemplate('default')]);
     }
 
     try {
@@ -77,7 +85,7 @@ export class Generator {
               localBlocks.push(`# ${stack} (local)\n${localTemplate}`);
             }
           }
-          return this.mergeTemplates([apiContent, essentialBlock, ...localBlocks]);
+          return this.assemble(essentialBlock, [apiContent, ...localBlocks]);
         }
       } catch (apiError) {
         console.warn(`⚠️  Error fetching from gitignore.io API: ${apiError}`);
@@ -85,8 +93,17 @@ export class Generator {
 
       console.warn('📦 Using local template as fallback...');
       const fallbackContent = this.getFallbackTemplate(stacks);
-      return this.mergeTemplates([essentialBlock, fallbackContent]);
+      return this.assemble(essentialBlock, [fallbackContent]);
     }
+  }
+
+  /**
+   * Single, central assembly point for ALL generation paths.
+   * Always places `essentialBlock` first to enforce the dedup-ordering
+   * invariant documented on `generate()`.
+   */
+  private assemble(essentialBlock: string, otherBlocks: string[]): string {
+    return this.mergeTemplates([essentialBlock, ...otherBlocks]);
   }
 
   /**
@@ -128,7 +145,8 @@ export class Generator {
   }
 
   private async fetchFromGitHub(stacks: string[], essentialBlock: string): Promise<string> {
-    const templates: string[] = [essentialBlock];
+    // Collected separately from essentialBlock: only assemble() places it.
+    const otherBlocks: string[] = [];
     const fetchedStacks: string[] = [];
     const notFoundStacks: string[] = [];
 
@@ -141,7 +159,7 @@ export class Generator {
         try {
           const content = await this.fetchGitHubTemplate(templateName);
           if (content) {
-            templates.push(`# ${templateName}\n${content}`);
+            otherBlocks.push(`# ${templateName}\n${content}`);
             fetchedStacks.push(normalized);
           }
         } catch {
@@ -152,8 +170,8 @@ export class Generator {
       }
     }
 
-    if (templates.length === 1) {
-      // Only essential block: nothing fetched. Try local templates before bailing.
+    if (otherBlocks.length === 0) {
+      // Nothing fetched from GitHub: try local templates before bailing.
       const anyLocal = notFoundStacks
         .map(s => this.getLocalTemplate(s))
         .some(t => !!t);
@@ -164,10 +182,10 @@ export class Generator {
 
     for (const stack of notFoundStacks) {
       const localTemplate = this.getLocalTemplate(stack);
-      if (localTemplate) templates.push(`# ${stack} (local)\n${localTemplate}`);
+      if (localTemplate) otherBlocks.push(`# ${stack} (local)\n${localTemplate}`);
     }
 
-    return this.mergeTemplates(templates);
+    return this.assemble(essentialBlock, otherBlocks);
   }
 
   private getLocalTemplate(stack: string): string | null {
