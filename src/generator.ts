@@ -1,133 +1,53 @@
 import * as https from 'https';
 import * as fs from 'fs';
 import * as path from 'path';
+import { normalizePattern } from './normalize';
+import { getStack, getValidApiStacks } from './stacks';
+
+export interface GeneratorOptions {
+  /** Directory containing local fallback templates */
+  templatesDir?: string;
+  /** Per-request timeout in ms (default 8000) */
+  requestTimeoutMs?: number;
+  /** Number of retry attempts for HTTP failures (default 2) */
+  retries?: number;
+}
+
+const USER_AGENT = 'smart-gitignore (+https://github.com/Otto-Schmitz/smart-gitignore)';
 
 /**
  * Generates .gitignore content using GitHub/gitignore templates
- * with fallback to gitignore.io and local templates
+ * with fallback to gitignore.io and local templates.
  */
 export class Generator {
   private readonly githubUrl = 'https://raw.githubusercontent.com/github/gitignore/main';
   private readonly apiUrl = 'https://www.toptal.com/developers/gitignore/api';
   private readonly templatesDir: string;
+  private readonly requestTimeoutMs: number;
+  private readonly retries: number;
 
-  // Mapping of detected stacks to GitHub template names
-  // GitHub templates use PascalCase (e.g., Node.gitignore, Java.gitignore)
-  private readonly githubTemplateMap: Map<string, string> = new Map([
-    ['node', 'Node'],
-    ['java', 'Java'],
-    ['maven', 'Maven'],
-    ['gradle', 'Gradle'],
-    ['ruby', 'Ruby'],
-    ['python', 'Python'],
-    ['django', 'Django'],
-    ['go', 'Go'],
-    ['rust', 'Rust'],
-    ['php', 'PHP'],
-    ['composer', 'Composer'],
-    ['visualstudio', 'VisualStudio'],
-    ['intellij', 'Global/JetBrains'],
-    ['vscode', 'Global/VisualStudioCode'],
-    ['eclipse', 'Global/Eclipse'],
-    ['dotenv', 'Global/Env'],
-    ['c', 'C'],
-    ['cpp', 'C++'],
-    ['csharp', 'VisualStudio'],
-    ['typescript', 'TypeScript'],
-    ['javascript', 'JavaScript'],
-    ['react', 'React'],
-    ['vue', 'Vue'],
-    ['angular', 'Angular'],
-    ['nextjs', 'Nextjs'],
-    ['nuxt', 'Nuxt'],
-    ['gatsby', 'Gatsby'],
-    ['svelte', 'Svelte'],
-    ['yarn', 'Yarn'],
-    ['flutter', 'Flutter'],
-    ['dart', 'Dart'],
-    ['kotlin', 'Kotlin'],
-    ['swift', 'Swift'],
-    ['scala', 'Scala'],
-    ['clojure', 'Clojure'],
-    ['elixir', 'Elixir'],
-    ['erlang', 'Erlang'],
-    ['haskell', 'Haskell'],
-    ['ocaml', 'OCaml'],
-    ['perl', 'Perl'],
-    ['r', 'R'],
-    ['matlab', 'MATLAB'],
-    ['julia', 'Julia'],
-    ['lua', 'Lua'],
-    ['nim', 'Nim'],
-    ['crystal', 'Crystal'],
-    ['zig', 'Zig'],
-    ['terraform', 'Terraform'],
-    ['ansible', 'Ansible'],
-    ['kubernetes', 'Kubernetes'],
-    ['helm', 'Helm'],
-    ['vagrant', 'Vagrant'],
-  ]);
+  constructor(opts: GeneratorOptions | string = {}) {
+    // Backwards-compat: previously accepted a string templatesDir.
+    const options: GeneratorOptions = typeof opts === 'string' ? { templatesDir: opts } : opts;
 
-  // Mapeamento de stacks conhecidas válidas na API gitignore.io
-  // Stacks inválidas como 'npm', 'pnpm' e 'docker' são filtradas
-  // Nota: 'docker' não existe na API, mas pode ser coberto por templates locais
-  private readonly validStacks = new Set([
-    'node', 'yarn', 'java', 'maven', 'gradle', 'ruby',
-    'python', 'django', 'go', 'rust', 'php', 'composer', 'visualstudio',
-    'intellij', 'vscode', 'eclipse', 'dotenv', 'c', 'cpp', 'csharp',
-    'typescript', 'javascript', 'react', 'vue', 'angular', 'nextjs',
-    'nuxt', 'gatsby', 'svelte', 'flutter', 'dart', 'kotlin', 'swift',
-    'scala', 'clojure', 'elixir', 'erlang', 'haskell', 'ocaml', 'perl',
-    'r', 'matlab', 'julia', 'lua', 'nim', 'crystal', 'zig', 'v',
-    'terraform', 'ansible', 'kubernetes', 'helm', 'vagrant', 'packer'
-  ]);
-
-  constructor(templatesDir?: string) {
-    if (templatesDir) {
-      this.templatesDir = templatesDir;
+    if (options.templatesDir) {
+      this.templatesDir = options.templatesDir;
     } else {
-      // Resolve templates path to work in both dev and production
-      // In dev: __dirname = src/, so ../templates
-      // In production: __dirname = dist/, so ../templates
       const baseDir = path.resolve(__dirname, '..');
       this.templatesDir = path.join(baseDir, 'templates');
     }
+    this.requestTimeoutMs = options.requestTimeoutMs ?? 8000;
+    this.retries = options.retries ?? 2;
   }
 
-  /**
-   * Regras essenciais sempre incluídas (OS, IDEs, .env, logs, tmp)
-   * Não dependem da stack detectada.
-   */
-  private getEssentialTemplate(): string {
-    const essentialPath = path.join(this.templatesDir, 'essential.gitignore');
-    if (fs.existsSync(essentialPath)) {
-      return fs.readFileSync(essentialPath, 'utf-8').trim();
-    }
-    return `# OS
-.DS_Store
-Thumbs.db
-
-# IDEs
-.idea/
-.vscode/
-
-# Environment
-.env
-.env.local
-.env.*.local
-
-# Logs
-*.log
-
-# Temporary
-*.tmp
-.cache/`;
-  }
+  // --------------------------------------------------------------------
+  // Public API
+  // --------------------------------------------------------------------
 
   /**
-   * Generates .gitignore content for the provided stacks
-   * Priority: GitHub → gitignore.io → local templates
-   * Regras essenciais (.env, OS, IDEs, etc.) são sempre incluídas.
+   * Generates .gitignore content for the provided stacks.
+   * Priority: GitHub -> gitignore.io -> local templates.
+   * Essential rules (.env, OS, IDEs, ...) are always included.
    */
   public async generate(stacks: string[]): Promise<string> {
     const essentialBlock = `# Essential (OS, IDEs, env, logs)\n${this.getEssentialTemplate()}`;
@@ -136,19 +56,17 @@ Thumbs.db
       return this.mergeTemplates([essentialBlock, this.getFallbackTemplate('default')]);
     }
 
-    // Try to fetch from GitHub first (most complete and up-to-date)
     try {
       return await this.fetchFromGitHub(stacks, essentialBlock);
     } catch (error) {
       console.warn(`⚠️  Error fetching from GitHub: ${error}`);
-      
-      // Fallback to gitignore.io
+
       try {
         const validStacks = this.filterValidStacks(stacks);
         if (validStacks.length > 0) {
           const apiContent = await this.fetchFromAPI(validStacks);
-          // Also append local templates for stacks not covered by the API
-          // (e.g. AI tooling that doesn't exist on gitignore.io)
+          // Append local templates for stacks not covered by gitignore.io
+          // (e.g. AI tooling that doesn't exist on gitignore.io).
           const remaining = stacks
             .map(s => s.toLowerCase().trim())
             .filter(s => !validStacks.includes(s));
@@ -164,8 +82,7 @@ Thumbs.db
       } catch (apiError) {
         console.warn(`⚠️  Error fetching from gitignore.io API: ${apiError}`);
       }
-      
-      // Last fallback: local templates
+
       console.warn('📦 Using local template as fallback...');
       const fallbackContent = this.getFallbackTemplate(stacks);
       return this.mergeTemplates([essentialBlock, fallbackContent]);
@@ -173,17 +90,53 @@ Thumbs.db
   }
 
   /**
-   * Fetches templates from GitHub/gitignore repository
+   * Filters only stacks that gitignore.io accepts (and dedupes).
    */
+  public filterValidStacks(stacks: string[]): string[] {
+    const validApi = getValidApiStacks();
+    const valid = new Set<string>();
+    for (const stack of stacks) {
+      const normalized = stack.toLowerCase().trim();
+      if (normalized && validApi.has(normalized)) valid.add(normalized);
+    }
+    return Array.from(valid).sort();
+  }
+
+  /**
+   * Exposed for the Merger so both pieces share the exact same merge policy.
+   */
+  public mergeTemplates(templates: string[]): string {
+    return mergeBlocks(templates);
+  }
+
+  // --------------------------------------------------------------------
+  // Internals
+  // --------------------------------------------------------------------
+
+  private getEssentialTemplate(): string {
+    const essentialPath = path.join(this.templatesDir, 'essential.gitignore');
+    if (fs.existsSync(essentialPath)) {
+      return fs.readFileSync(essentialPath, 'utf-8').trim();
+    }
+    return [
+      '# OS', '.DS_Store', 'Thumbs.db',
+      '', '# IDEs', '.idea/', '.vscode/',
+      '', '# Environment', '.env', '.env.local', '.env.*.local',
+      '', '# Logs', '*.log',
+      '', '# Temporary', '*.tmp', '.cache/',
+    ].join('\n');
+  }
+
   private async fetchFromGitHub(stacks: string[], essentialBlock: string): Promise<string> {
     const templates: string[] = [essentialBlock];
     const fetchedStacks: string[] = [];
     const notFoundStacks: string[] = [];
-    
+
     for (const stack of stacks) {
       const normalized = stack.toLowerCase().trim();
-      const templateName = this.githubTemplateMap.get(normalized);
-      
+      const meta = getStack(normalized);
+      const templateName = meta?.githubTemplate;
+
       if (templateName) {
         try {
           const content = await this.fetchGitHubTemplate(templateName);
@@ -191,38 +144,32 @@ Thumbs.db
             templates.push(`# ${templateName}\n${content}`);
             fetchedStacks.push(normalized);
           }
-        } catch (error) {
-          // Stack not found on GitHub, try local template later
+        } catch {
           notFoundStacks.push(normalized);
         }
       } else {
-        // Stack not mapped, try local template later
         notFoundStacks.push(normalized);
       }
     }
 
-    // If no templates found on GitHub, throw error to use fallback
-    if (templates.length === 0) {
-      throw new Error('No templates found on GitHub');
-    }
-
-    // Add local templates for stacks not found on GitHub
-    if (notFoundStacks.length > 0) {
-      for (const stack of notFoundStacks) {
-        const localTemplate = this.getLocalTemplate(stack);
-        if (localTemplate) {
-          templates.push(`# ${stack} (local)\n${localTemplate}`);
-        }
+    if (templates.length === 1) {
+      // Only essential block: nothing fetched. Try local templates before bailing.
+      const anyLocal = notFoundStacks
+        .map(s => this.getLocalTemplate(s))
+        .some(t => !!t);
+      if (!anyLocal) {
+        throw new Error('No templates found on GitHub');
       }
     }
 
-    // Combine all templates, removing duplicates
+    for (const stack of notFoundStacks) {
+      const localTemplate = this.getLocalTemplate(stack);
+      if (localTemplate) templates.push(`# ${stack} (local)\n${localTemplate}`);
+    }
+
     return this.mergeTemplates(templates);
   }
 
-  /**
-   * Try to get local template for a specific stack
-   */
   private getLocalTemplate(stack: string): string | null {
     const templatePath = path.join(this.templatesDir, `${stack}.gitignore`);
     if (fs.existsSync(templatePath)) {
@@ -231,159 +178,71 @@ Thumbs.db
     return null;
   }
 
-  /**
-   * Fetches a specific template from GitHub
-   */
   private async fetchGitHubTemplate(templateName: string): Promise<string> {
-    const url = `${this.githubUrl}/${templateName}.gitignore`;
+    return this.fetchUrlWithRetry(`${this.githubUrl}/${templateName}.gitignore`);
+  }
 
+  private async fetchFromAPI(stacks: string[]): Promise<string> {
+    const url = `${this.apiUrl}/${stacks.join(',')}`;
+    const data = await this.fetchUrlWithRetry(url);
+    if (data.includes('ERROR:') || data.includes('is undefined')) {
+      throw new Error('API returned error: one or more stacks are invalid');
+    }
+    return data;
+  }
+
+  private async fetchUrlWithRetry(url: string): Promise<string> {
+    let lastError: unknown;
+    for (let attempt = 0; attempt <= this.retries; attempt++) {
+      try {
+        return await this.fetchUrl(url);
+      } catch (err) {
+        lastError = err;
+        if (attempt < this.retries) {
+          // Exponential backoff: 200ms, 400ms, 800ms...
+          await new Promise(r => setTimeout(r, 200 * Math.pow(2, attempt)));
+        }
+      }
+    }
+    throw lastError;
+  }
+
+  private fetchUrl(url: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      https.get(url, (res) => {
-        if (res.statusCode === 404) {
-          reject(new Error(`Template ${templateName} not found`));
+      const req = https.get(url, { headers: { 'User-Agent': USER_AGENT } }, (res) => {
+        const status = res.statusCode ?? 0;
+        if (status === 404) {
+          res.resume();
+          reject(new Error(`Not found: ${url}`));
           return;
         }
-
-        if (res.statusCode !== 200) {
-          reject(new Error(`GitHub returned status ${res.statusCode}`));
+        if (status < 200 || status >= 300) {
+          res.resume();
+          reject(new Error(`HTTP ${status} for ${url}`));
           return;
         }
-
         let data = '';
-        res.on('data', (chunk) => {
-          data += chunk;
-        });
-
+        res.on('data', chunk => { data += chunk; });
         res.on('end', () => {
           if (data.trim().length === 0) {
-            reject(new Error('Empty response from GitHub'));
+            reject(new Error(`Empty response from ${url}`));
             return;
           }
           resolve(data.trim());
         });
-      }).on('error', (error) => {
-        reject(error);
       });
+
+      req.setTimeout(this.requestTimeoutMs, () => {
+        req.destroy(new Error(`Request timed out after ${this.requestTimeoutMs}ms: ${url}`));
+      });
+
+      req.on('error', reject);
     });
   }
 
-  /**
-   * Merges multiple templates removing duplicate lines and excessive comments
-   */
-  private mergeTemplates(templates: string[]): string {
-    const allLines = new Set<string>();
-    const allComments = new Set<string>();
-    const sections: string[] = [];
-
-    for (const template of templates) {
-      const lines = template.split('\n');
-      const sectionLines: string[] = [];
-      let lastWasComment = false;
-
-      for (const line of lines) {
-        const trimmed = line.trim();
-        
-        // Empty lines
-        if (trimmed === '') {
-          // Avoid multiple consecutive empty lines
-          if (!lastWasComment || sectionLines.length === 0 || sectionLines[sectionLines.length - 1] !== '') {
-            sectionLines.push('');
-          }
-          lastWasComment = false;
-          continue;
-        }
-        
-        // Comments
-        if (trimmed.startsWith('#')) {
-          // Remove duplicate comments (normalized)
-          const normalizedComment = trimmed.toLowerCase();
-          if (!allComments.has(normalizedComment)) {
-            allComments.add(normalizedComment);
-            sectionLines.push(line);
-            lastWasComment = true;
-          }
-          continue;
-        }
-
-        // Remove duplicates based on normalized content
-        const normalized = trimmed.toLowerCase();
-        if (!allLines.has(normalized)) {
-          allLines.add(normalized);
-          sectionLines.push(line);
-          lastWasComment = false;
-        }
-      }
-
-      if (sectionLines.length > 0) {
-        sections.push(sectionLines.join('\n'));
-      }
-    }
-
-    return sections.join('\n\n');
-  }
-
-  /**
-   * Filters only known valid stacks
-   * Removes duplicates and invalid stacks (like 'npm', 'pnpm')
-   */
-  public filterValidStacks(stacks: string[]): string[] {
-    const valid = new Set<string>();
-    
-    for (const stack of stacks) {
-      const normalized = stack.toLowerCase().trim();
-      if (normalized && this.validStacks.has(normalized)) {
-        valid.add(normalized);
-      }
-    }
-    
-    return Array.from(valid).sort();
-  }
-
-  /**
-   * Fetches .gitignore from gitignore.io API
-   */
-  private async fetchFromAPI(stacks: string[]): Promise<string> {
-    const stacksParam = stacks.join(',');
-    const url = `${this.apiUrl}/${stacksParam}`;
-
-    return new Promise((resolve, reject) => {
-      https.get(url, (res) => {
-        let data = '';
-        res.on('data', (chunk) => {
-          data += chunk;
-        });
-
-        res.on('end', () => {
-          // Check if response contains API error
-          if (data.includes('ERROR:') || data.includes('is undefined')) {
-            reject(new Error(`API returned error: one or more stacks are invalid`));
-            return;
-          }
-
-          if (res.statusCode !== 200) {
-            reject(new Error(`API returned status ${res.statusCode}`));
-            return;
-          }
-
-          if (data.trim().length === 0) {
-            reject(new Error('Empty API response'));
-            return;
-          }
-          resolve(data);
-        });
-      }).on('error', (error) => {
-        reject(error);
-      });
-    });
-  }
-
-  /**
-   * Gets local template as fallback
-   */
   private getFallbackTemplate(stacks: string | string[]): string {
     const stackList = Array.isArray(stacks) ? stacks : [stacks];
-    
-    // Try to load specific template
+
     for (const stack of stackList) {
       const templatePath = path.join(this.templatesDir, `${stack}.gitignore`);
       if (fs.existsSync(templatePath)) {
@@ -391,53 +250,90 @@ Thumbs.db
       }
     }
 
-    // Fallback to default template
     const defaultPath = path.join(this.templatesDir, 'default.gitignore');
     if (fs.existsSync(defaultPath)) {
       return fs.readFileSync(defaultPath, 'utf-8');
     }
 
-    // Last fallback: basic template
     return this.getBasicTemplate();
   }
 
-  /**
-   * Returns a basic template if no local templates exist
-   */
   private getBasicTemplate(): string {
-    return `# OS
-.DS_Store
-Thumbs.db
-
-# IDEs
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
-
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Dependencies
-node_modules/
-vendor/
-
-# Environment
-.env
-.env.local
-.env.*.local
-
-# Build
-dist/
-build/
-*.class
-*.jar
-*.war
-`;
+    return [
+      '# OS', '.DS_Store', 'Thumbs.db',
+      '',
+      '# IDEs', '.idea/', '.vscode/', '*.swp', '*.swo', '*~',
+      '',
+      '# Logs', '*.log', 'npm-debug.log*', 'yarn-debug.log*', 'yarn-error.log*',
+      '',
+      '# Dependencies', 'node_modules/', 'vendor/',
+      '',
+      '# Environment', '.env', '.env.local', '.env.*.local',
+      '',
+      '# Build', 'dist/', 'build/', '*.class', '*.jar', '*.war',
+      '',
+    ].join('\n');
   }
 }
 
+// ----------------------------------------------------------------------------
+// Shared merge policy (used by Generator AND Merger).
+// ----------------------------------------------------------------------------
+
+/**
+ * Merges a list of .gitignore blocks into a single document.
+ *
+ * Dedup policy:
+ *  - Patterns are normalized via normalizePattern (handles trailing-slash,
+ *    leading-slash and **\u002f variants).
+ *  - Comments are normalized too: identical headings collapse to one occurrence.
+ *  - Negations (!foo) are kept distinct from their positive counterpart.
+ *  - At most one consecutive blank line is preserved.
+ */
+export function mergeBlocks(templates: string[]): string {
+  const seenLines = new Set<string>();
+  const seenComments = new Set<string>();
+  const sections: string[] = [];
+
+  for (const template of templates) {
+    const lines = template.split('\n');
+    const sectionLines: string[] = [];
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+
+      if (trimmed === '') {
+        // Avoid multiple consecutive blank lines.
+        if (sectionLines.length > 0 && sectionLines[sectionLines.length - 1] !== '') {
+          sectionLines.push('');
+        }
+        continue;
+      }
+
+      if (trimmed.startsWith('#')) {
+        const key = normalizePattern(trimmed);
+        if (key && !seenComments.has(key)) {
+          seenComments.add(key);
+          sectionLines.push(line);
+        }
+        continue;
+      }
+
+      const key = normalizePattern(trimmed);
+      if (key && !seenLines.has(key)) {
+        seenLines.add(key);
+        sectionLines.push(line);
+      }
+    }
+
+    if (sectionLines.length > 0) {
+      // Drop trailing blank inside the block; sections are joined with '\n\n'
+      while (sectionLines.length && sectionLines[sectionLines.length - 1] === '') {
+        sectionLines.pop();
+      }
+      sections.push(sectionLines.join('\n'));
+    }
+  }
+
+  return sections.join('\n\n');
+}
