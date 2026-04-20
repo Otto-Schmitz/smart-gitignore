@@ -1,0 +1,8 @@
+# Windsurf (Codeium)
+# Mantém .windsurfrules.
+# Ignora logs e estado local.
+
+.windsurf/logs/
+.windsurf/cache/
+.windsurf/state/
+.windsurf/sessions/

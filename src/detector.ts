@@ -74,6 +74,30 @@ export class Detector {
     ['.csproj', ['visualstudio']],
     ['.sln', ['visualstudio']],
     ['project.json', ['visualstudio']],
+
+    // AI assistants & tooling
+    ['.cursor', ['ai', 'cursor']],
+    ['.cursorrules', ['ai', 'cursor']],
+    ['.cursorignore', ['ai', 'cursor']],
+    ['.cursorindexingignore', ['ai', 'cursor']],
+    ['.claude', ['ai', 'claude']],
+    ['CLAUDE.md', ['ai', 'claude']],
+    ['.aider.conf.yml', ['ai', 'aider']],
+    ['.aider.conf.yaml', ['ai', 'aider']],
+    ['.aider.chat.history.md', ['ai', 'aider']],
+    ['.aider.input.history', ['ai', 'aider']],
+    ['.aider.llm.history', ['ai', 'aider']],
+    ['.codex', ['ai', 'codex']],
+    ['AGENTS.md', ['ai', 'codex']],
+    ['.continue', ['ai', 'continue']],
+    ['.continuerules', ['ai', 'continue']],
+    ['.windsurf', ['ai', 'windsurf']],
+    ['.windsurfrules', ['ai', 'windsurf']],
+    ['.copilot', ['ai', 'copilot']],
+    ['.codeium', ['ai']],
+    ['.cody', ['ai']],
+    ['.tabnine', ['ai']],
+    ['.ai', ['ai']],
   ]);
 
   constructor(scanner: Scanner) {
@@ -118,6 +142,32 @@ export class Detector {
     // Detect TypeScript
     if (files.some(f => f === 'tsconfig.json' || f.endsWith('.ts'))) {
       stacks.add('node');
+    }
+
+    // Detect AI tooling by glob/nested patterns
+    if (files.some(f => /^\.aider/.test(f))) {
+      stacks.add('ai');
+      stacks.add('aider');
+    }
+
+    // Nested AI artifacts (require explicit existence check)
+    const nestedAiPaths: Array<[string, string[]]> = [
+      ['docs/ai', ['ai']],
+      ['ai-docs', ['ai']],
+      ['.github/copilot-instructions.md', ['ai', 'copilot']],
+      ['.github/chatmodes', ['ai', 'copilot']],
+      ['.github/prompts', ['ai', 'copilot']],
+      ['.cursor/rules', ['ai', 'cursor']],
+      ['.cursor/mcp.json', ['ai', 'cursor']],
+      ['.claude/settings.json', ['ai', 'claude']],
+      ['.claude/agents', ['ai', 'claude']],
+      ['.claude/commands', ['ai', 'claude']],
+    ];
+
+    for (const [relPath, addStacks] of nestedAiPaths) {
+      if (this.scanner.exists(relPath)) {
+        addStacks.forEach(s => stacks.add(s));
+      }
     }
   }
 

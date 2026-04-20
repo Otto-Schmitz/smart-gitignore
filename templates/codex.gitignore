@@ -1,0 +1,7 @@
+# OpenAI Codex CLI
+# Mantém AGENTS.md (instruções do projeto para agentes).
+# Ignora dados locais do CLI dentro do repositório.
+
+.codex/
+codex-*.log
+codex-session-*.json

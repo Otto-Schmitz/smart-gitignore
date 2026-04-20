@@ -89,6 +89,22 @@ npx smart-gitignore --verbose
 - **VS Code**: `.vscode/`
 - **Eclipse**: `.eclipse/`, `.settings/`, `.project`, `.classpath`
 
+### AI Assistants & Tooling
+- **Cursor**: `.cursor/`, `.cursorrules`, `.cursorignore`, `.cursorindexingignore`
+- **Claude Code**: `.claude/`, `CLAUDE.md`
+- **Aider**: `.aider*` (`.aider.conf.yml`, `.aider.chat.history.md`, ...)
+- **OpenAI Codex**: `.codex/`, `AGENTS.md`
+- **Continue.dev**: `.continue/`, `.continuerules`
+- **Windsurf**: `.windsurf/`, `.windsurfrules`
+- **GitHub Copilot**: `.copilot/`, `.github/copilot-instructions.md`
+- **Outros**: `.codeium/`, `.cody/`, `.tabnine/`, `.ai/`, `docs/ai/`, `ai-docs/`
+
+> Os templates mantêm intencionalmente os artefatos compartilháveis
+> (regras, prompts, hooks, `AGENTS.md`, `CLAUDE.md`, `.cursor/rules/`,
+> `.cursor/mcp.json`, `.aider.conf.yml`, `config.yaml` do Continue, etc.)
+> e ignoram apenas dados locais: históricos de chat, sessões, caches,
+> logs, vetores/embeddings e configurações pessoais (`*.local.*`).
+
 ### Others
 - **dotenv**: `.env`, `.env.local`, `.env.development`, `.env.production`
 

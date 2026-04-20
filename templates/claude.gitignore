@@ -1,0 +1,18 @@
+# Claude Code (Anthropic)
+# Mantém: CLAUDE.md, .claude/settings.json, .claude/hooks/,
+# .claude/commands/, .claude/agents/, .claude/skills/.
+# Ignora: configurações locais, históricos e estado de sessão.
+
+.claude/settings.local.json
+.claude/.credentials.json
+.claude/projects/
+.claude/state/
+.claude/logs/
+.claude/cache/
+.claude/history/
+.claude/sessions/
+.claude/.session*
+.claude/*.local.*
+
+# Arquivos pessoais de instruções (use CLAUDE.md para o time)
+CLAUDE.local.md

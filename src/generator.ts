@@ -147,7 +147,19 @@ Thumbs.db
         const validStacks = this.filterValidStacks(stacks);
         if (validStacks.length > 0) {
           const apiContent = await this.fetchFromAPI(validStacks);
-          return this.mergeTemplates([apiContent, essentialBlock]);
+          // Also append local templates for stacks not covered by the API
+          // (e.g. AI tooling that doesn't exist on gitignore.io)
+          const remaining = stacks
+            .map(s => s.toLowerCase().trim())
+            .filter(s => !validStacks.includes(s));
+          const localBlocks: string[] = [];
+          for (const stack of remaining) {
+            const localTemplate = this.getLocalTemplate(stack);
+            if (localTemplate) {
+              localBlocks.push(`# ${stack} (local)\n${localTemplate}`);
+            }
+          }
+          return this.mergeTemplates([apiContent, essentialBlock, ...localBlocks]);
         }
       } catch (apiError) {
         console.warn(`⚠️  Error fetching from gitignore.io API: ${apiError}`);

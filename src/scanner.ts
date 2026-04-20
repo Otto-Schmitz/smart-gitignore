@@ -25,15 +25,24 @@ export class Scanner {
       const allowedHiddenFiles = [
         '.env', '.env.local', '.env.development', '.env.production',
         '.idea', '.vscode', '.dockerignore', '.ruby-version',
-        '.eclipse', '.settings', '.project', '.classpath'
+        '.eclipse', '.settings', '.project', '.classpath',
+        // AI assistants & tooling
+        '.cursor', '.cursorrules', '.cursorignore', '.cursorindexingignore',
+        '.claude', '.codex', '.continue', '.continuerules',
+        '.windsurf', '.windsurfrules', '.copilot', '.codeium',
+        '.cody', '.tabnine', '.ai', '.github'
       ];
-      
+
+      // Hidden file prefixes that are always allowed (e.g. all .aider* files)
+      const allowedHiddenPrefixes = ['.aider'];
+
       for (const entry of entries) {
         const fullPath = path.join(this.rootDir, entry.name);
-        
+
         // Ignore hidden files (except those important for detection)
-        if (entry.name.startsWith('.') && 
-            !allowedHiddenFiles.includes(entry.name)) {
+        if (entry.name.startsWith('.') &&
+            !allowedHiddenFiles.includes(entry.name) &&
+            !allowedHiddenPrefixes.some(p => entry.name.startsWith(p))) {
           continue;
         }
         

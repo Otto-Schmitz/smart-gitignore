@@ -1,0 +1,104 @@
+# ====================================================================
+# AI assistants & tooling — combined template
+# Cobre Cursor, Claude Code, Aider, OpenAI Codex, GitHub Copilot,
+# Continue.dev, Windsurf, Zed AI e artefatos genéricos de IA.
+# Mantém arquivos compartilháveis (rules, prompts, AGENTS.md, CLAUDE.md)
+# e ignora apenas dados locais, históricos de chat, caches e logs.
+# ====================================================================
+
+# --- Cursor (https://cursor.com) ----------------------------------
+# Mantém .cursor/rules/, .cursor/commands/ e .cursor/mcp.json (commit)
+.cursor/agent-transcripts/
+.cursor/logs/
+.cursor/state/
+.cursor/cache/
+.cursor/projects/
+.cursor/tmp/
+.cursor/*.log
+
+# --- Claude Code (Anthropic) --------------------------------------
+# Mantém CLAUDE.md, .claude/settings.json, hooks/, commands/, agents/
+.claude/settings.local.json
+.claude/projects/
+.claude/state/
+.claude/logs/
+.claude/cache/
+.claude/history/
+.claude/.session*
+.claude/*.local.*
+
+# --- Aider (https://aider.chat) -----------------------------------
+# Mantém .aider.conf.yml (configuração compartilhada)
+.aider*
+!.aider.conf.yml
+!.aider.conf.yaml
+.aider.tags.cache.v*/
+.aider.chat.history.md
+.aider.input.history
+.aider.llm.history
+
+# --- OpenAI Codex CLI ---------------------------------------------
+# Mantém AGENTS.md (instruções compartilhadas)
+.codex/
+codex-*.log
+
+# --- GitHub Copilot -----------------------------------------------
+# Mantém .github/copilot-instructions.md
+.copilot/
+copilot-debug.log
+copilot-*.log
+
+# --- Continue.dev -------------------------------------------------
+# Mantém .continuerules e config.yaml compartilhado
+.continue/logs/
+.continue/index/
+.continue/sessions/
+.continue/dev_data/
+.continue/.session*
+
+# --- Windsurf (Codeium) -------------------------------------------
+# Mantém .windsurfrules
+.windsurf/logs/
+.windsurf/cache/
+.windsurf/state/
+
+# --- Zed AI -------------------------------------------------------
+.zed/conversations/
+.zed/sessions/
+
+# --- Outros agentes / ferramentas ---------------------------------
+.cody/
+.tabnine/
+.sourcegraph/
+.codeium/
+.codewhisperer/
+.replit-ai/
+.amazonq/cache/
+
+# --- Genéricos de IA ----------------------------------------------
+.ai/cache/
+.ai/logs/
+.ai/sessions/
+.llm/
+.llm-cache/
+ai-cache/
+*.llm-cache
+*.embedding-cache
+embeddings/*.bin
+embeddings/*.faiss
+embeddings/*.pkl
+.vectorstore/
+.chroma/
+.chromadb/
+.lancedb/
+.qdrant_storage/
+
+# Prompts/respostas com dados sensíveis ou pessoais
+prompts.local.*
+responses/*.local.*
+ai-output/
+ai-outputs/
+
+# Notebooks com saídas pesadas ou dados privados (opcional)
+# *-checkpoint.ipynb
+# .ipynb_checkpoints/
