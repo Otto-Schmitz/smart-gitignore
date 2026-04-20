@@ -13,10 +13,18 @@ const program = new Command();
 program
   .name('smart-gitignore')
   .description('Smart .gitignore generator with automatic stack detection')
-  .version('1.1.0')
+  .version('1.4.0')
   .option('-d, --dir <path>', 'Directory to scan (default: current directory)', process.cwd())
   .option('-f, --force', 'Overwrite existing .gitignore without merging', false)
   .option('-v, --verbose', 'Verbose mode', false)
+  .option(
+    '--depth <n>',
+    'Scanner depth (1 = root only, >=2 enables monorepo/nested detection)',
+    (v) => parseInt(v, 10),
+    1,
+  )
+  .option('--timeout <ms>', 'HTTP timeout per request in ms', (v) => parseInt(v, 10), 8000)
+  .option('--retries <n>', 'HTTP retry attempts', (v) => parseInt(v, 10), 2)
   .action(async (options) => {
     try {
       await run(options);
@@ -26,23 +34,28 @@ program
     }
   });
 
-async function run(options: { dir: string; force: boolean; verbose: boolean }) {
-  const { dir, force, verbose } = options;
+interface RunOptions {
+  dir: string;
+  force: boolean;
+  verbose: boolean;
+  depth: number;
+  timeout: number;
+  retries: number;
+}
+
+async function run(options: RunOptions) {
+  const { dir, force, verbose, depth, timeout, retries } = options;
   const gitignorePath = path.join(dir, '.gitignore');
 
   if (verbose) {
-    console.log(`📂 Scanning directory: ${dir}`);
+    console.log(`📂 Scanning directory: ${dir} (depth=${depth})`);
   }
 
-  // 1. Scan directory
-  const scanner = new Scanner(dir);
+  const scanner = new Scanner(dir, { maxDepth: depth });
   const detector = new Detector(scanner);
 
-  if (verbose) {
-    console.log('🔍 Detecting stacks...');
-  }
+  if (verbose) console.log('🔍 Detecting stacks...');
 
-  // 2. Detect stacks
   const detectedStacks = detector.detectStacks();
 
   if (detectedStacks.length === 0) {
@@ -51,22 +64,19 @@ async function run(options: { dir: string; force: boolean; verbose: boolean }) {
     console.log(`✅ Stacks detected: ${detectedStacks.join(', ')}`);
   }
 
-  // 3. Generate content
-  if (verbose) {
-    console.log('🌐 Fetching templates from GitHub/gitignore...');
-  }
+  if (verbose) console.log('🌐 Fetching templates from GitHub/gitignore...');
 
-  const generator = new Generator();
+  const generator = new Generator({
+    requestTimeoutMs: timeout,
+    retries,
+  });
   const newContent = await generator.generate(detectedStacks);
 
-  // 4. Merge if necessary
   const merger = new Merger();
   let finalContent: string;
 
   if (fs.existsSync(gitignorePath) && !force) {
-    if (verbose) {
-      console.log('🔄 Merging with existing .gitignore...');
-    }
+    if (verbose) console.log('🔄 Merging with existing .gitignore...');
     const existingContent = merger.readExisting(gitignorePath);
     finalContent = merger.merge(existingContent, newContent, detectedStacks);
     console.log('✅ .gitignore updated successfully!');
@@ -74,18 +84,13 @@ async function run(options: { dir: string; force: boolean; verbose: boolean }) {
     if (verbose && force) {
       console.log('⚠️  Force mode enabled, overwriting .gitignore...');
     }
-    const header = merger.generateHeader(detectedStacks);
-    finalContent = header + newContent;
+    finalContent = merger.buildFreshFile(newContent, detectedStacks);
     console.log('✅ .gitignore created successfully!');
   }
 
-  // 5. Write file
   merger.write(gitignorePath, finalContent);
 
-  if (verbose) {
-    console.log(`📝 File saved to: ${gitignorePath}`);
-  }
+  if (verbose) console.log(`📝 File saved to: ${gitignorePath}`);
 }
 
 program.parse();
-

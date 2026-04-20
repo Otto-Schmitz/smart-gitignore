@@ -1,0 +1,13 @@
+# Aider (https://aider.chat)
+# Mantém .aider.conf.yml / .aider.conf.yaml (config compartilhada).
+# Ignora caches, históricos de chat e logs locais.
+
+.aider*
+!.aider.conf.yml
+!.aider.conf.yaml
+
+# Caches/históricos específicos (redundantes, mas explícitos)
+.aider.tags.cache.v*/
+.aider.chat.history.md
+.aider.input.history
+.aider.llm.history

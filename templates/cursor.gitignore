@@ -1,0 +1,16 @@
+# Cursor IDE (https://cursor.com)
+# Mantém compartilháveis: .cursor/rules/, .cursor/commands/, .cursor/mcp.json,
+# .cursorignore e .cursorindexingignore.
+# Ignora apenas dados locais (transcripts, logs, cache, projetos pessoais).
+
+.cursor/agent-transcripts/
+.cursor/logs/
+.cursor/state/
+.cursor/cache/
+.cursor/projects/
+.cursor/tmp/
+.cursor/*.log
+.cursor/*.local.*
+
+# Sessões salvas localmente pelo IDE
+.cursor-tutor/

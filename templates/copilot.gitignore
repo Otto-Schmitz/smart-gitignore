@@ -1,0 +1,10 @@
+# GitHub Copilot
+# Mantém .github/copilot-instructions.md (instruções para o time).
+# Ignora caches/logs locais do plugin.
+
+.copilot/
+copilot-debug.log
+copilot-*.log
+
+# Snippets gerados localmente (opcional)
+.copilot-cache/

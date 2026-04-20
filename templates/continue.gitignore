@@ -1,0 +1,10 @@
+# Continue.dev (https://continue.dev)
+# Mantém .continuerules e config.yaml/config.json compartilhados.
+# Ignora logs, índices e dados de telemetria local.
+
+.continue/logs/
+.continue/index/
+.continue/sessions/
+.continue/dev_data/
+.continue/.session*
+.continue/cache/
