@@ -1,0 +1,216 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main"
+  - navigation "Primary" [ref=e3]:
+    - generic [ref=e4]:
+      - link "smart- gitignore" [ref=e5] [cursor=pointer]:
+        - /url: "#"
+        - img [ref=e6]
+        - text: smart-
+        - generic [ref=e9]: gitignore
+      - generic [ref=e10]:
+        - link "Features" [ref=e11] [cursor=pointer]:
+          - /url: "#features"
+        - link "Stacks" [ref=e12] [cursor=pointer]:
+          - /url: "#stacks"
+        - link "Usage" [ref=e13] [cursor=pointer]:
+          - /url: "#usage"
+        - link "GitHub" [ref=e14] [cursor=pointer]:
+          - /url: https://github.com/Otto-Schmitz/smart-gitignore
+  - main [ref=e15]:
+    - generic [ref=e18]:
+      - generic [ref=e19]:
+        - generic [ref=e20]: v1.4 — now with AI tooling support
+        - heading "Automatic .gitignore for any stack." [level=1] [ref=e22]:
+          - text: Automatic
+          - emphasis [ref=e23]: .gitignore
+          - text: for any stack.
+        - paragraph [ref=e24]:
+          - text: Scans your project, detects the stack, and writes a clean, deduplicated
+          - code [ref=e25]: .gitignore
+          - text: in one command. Merges safely with what you already have.
+        - generic [ref=e26]:
+          - link "Get started" [ref=e27] [cursor=pointer]:
+            - /url: "#usage"
+            - img [ref=e28]
+            - text: Get started
+          - link "Star on GitHub" [ref=e31] [cursor=pointer]:
+            - /url: https://github.com/Otto-Schmitz/smart-gitignore
+            - img [ref=e32]
+            - text: Star on GitHub
+      - img "Terminal demonstration of smart-gitignore running on a monorepo" [ref=e35]:
+        - generic [ref=e40]: ~/projects/my-app
+        - generic [ref=e41]: "$ npx smart-gitignore 📂 Scanning directory: ~/projects/my-app 🔍 Detecting stacks... ✅ Stacks detected: ai, claude, cursor, node, python, docker 🌐 Fetching templates from GitHub/gitignore... ✅ .gitignore created successfully!"
+    - generic [ref=e44]:
+      - generic [ref=e45]:
+        - paragraph [ref=e46]: Why use it
+        - heading "Built to stay out of your way." [level=2] [ref=e47]
+        - paragraph [ref=e48]: "Designed around three goals: accurate detection, safe merges, and no surprises on re-runs."
+      - generic [ref=e49]:
+        - generic [ref=e50]:
+          - img [ref=e52]
+          - heading "Automatic detection" [level=3] [ref=e55]
+          - paragraph [ref=e56]: Recognises 50+ stacks — Node, Python, Java, Docker, Rust, Go, .NET, AI tooling — by scanning files and extensions.
+        - generic [ref=e57]:
+          - img [ref=e59]
+          - heading "Idempotent merge" [level=3] [ref=e62]
+          - paragraph [ref=e63]: Running it again produces the same file. Your hand-written rules live outside the auto-generated markers.
+        - generic [ref=e64]:
+          - img [ref=e66]
+          - heading "Semantic dedupe" [level=3] [ref=e68]
+          - paragraph [ref=e69]:
+            - text: Collapses
+            - code [ref=e70]: node_modules
+            - text: ","
+            - code [ref=e71]: node_modules/
+            - text: ","
+            - code [ref=e72]: "**/node_modules/"
+            - text: — keeping negations intact.
+        - generic [ref=e73]:
+          - img [ref=e75]
+          - heading "Robust fallbacks" [level=3] [ref=e78]
+          - paragraph [ref=e79]: GitHub templates first, then gitignore.io, then local bundles. Timeouts and retries for flaky networks.
+        - generic [ref=e80]:
+          - img [ref=e82]
+          - heading "Monorepo-aware" [level=3] [ref=e87]
+          - paragraph [ref=e88]:
+            - text: Opt-in nested scanning via
+            - code [ref=e89]: "--depth"
+            - text: detects
+            - code [ref=e90]: apps/*
+            - text: ","
+            - code [ref=e91]: services/*
+            - text: and workspaces.
+        - generic [ref=e92]:
+          - img [ref=e94]
+          - heading "Zero config" [level=3] [ref=e97]
+          - paragraph [ref=e98]:
+            - text: Run
+            - code [ref=e99]: npx smart-gitignore
+            - text: and done. No config file, no flags required.
+    - generic [ref=e101]:
+      - generic [ref=e102]:
+        - paragraph [ref=e103]: Supported stacks
+        - heading "Covers what you actually use." [level=2] [ref=e104]
+        - paragraph [ref=e105]: Detection is driven by a single registry. Adding a new stack is a one-line change.
+      - generic [ref=e106]:
+        - generic [ref=e107]: node
+        - generic [ref=e108]: typescript
+        - generic [ref=e109]: python
+        - generic [ref=e110]: java
+        - generic [ref=e111]: kotlin
+        - generic [ref=e112]: scala
+        - generic [ref=e113]: go
+        - generic [ref=e114]: rust
+        - generic [ref=e115]: ruby
+        - generic [ref=e116]: php
+        - generic [ref=e117]: csharp
+        - generic [ref=e118]: c
+        - generic [ref=e119]: cpp
+        - generic [ref=e120]: bun
+        - generic [ref=e121]: deno
+        - generic [ref=e122]: react
+        - generic [ref=e123]: vue
+        - generic [ref=e124]: svelte
+        - generic [ref=e125]: nextjs
+        - generic [ref=e126]: nuxt
+        - generic [ref=e127]: astro
+        - generic [ref=e128]: django
+        - generic [ref=e129]: docker
+        - generic [ref=e130]: yarn
+        - generic [ref=e131]: maven
+        - generic [ref=e132]: gradle
+        - generic [ref=e133]: vite
+        - generic [ref=e134]: turbo
+        - generic [ref=e135]: nx
+        - generic [ref=e136]: composer
+        - generic [ref=e137]: terraform
+        - generic [ref=e138]: helm
+        - generic [ref=e139]: dotenv
+        - generic [ref=e140]: vscode
+        - generic [ref=e141]: intellij
+        - generic [ref=e142]: eclipse
+        - generic [ref=e143]: visualstudio
+        - generic [ref=e144]: cursor
+        - generic [ref=e145]: claude
+        - generic [ref=e146]: aider
+        - generic [ref=e147]: codex
+        - generic [ref=e148]: copilot
+        - generic [ref=e149]: continue
+        - generic [ref=e150]: windsurf
+    - generic [ref=e153]:
+      - paragraph [ref=e154]: New in v1.4
+      - heading "First-class AI tooling support." [level=2] [ref=e155]
+      - paragraph [ref=e156]:
+        - text: Keeps shareable artifacts (
+        - code [ref=e157]: CLAUDE.md
+        - text: ","
+        - code [ref=e158]: AGENTS.md
+        - text: ","
+        - code [ref=e159]: .cursor/rules/
+        - text: ","
+        - code [ref=e160]: .aider.conf.yml
+        - text: ) and ignores only local data — chat history, sessions, caches, logs and personal overrides.
+      - generic [ref=e161]:
+        - generic [ref=e162]: Cursor
+        - generic [ref=e163]: Claude Code
+        - generic [ref=e164]: Aider
+        - generic [ref=e165]: OpenAI Codex
+        - generic [ref=e166]: GitHub Copilot
+        - generic [ref=e167]: Continue.dev
+        - generic [ref=e168]: Windsurf
+    - generic [ref=e170]:
+      - generic [ref=e171]:
+        - paragraph [ref=e172]: Usage
+        - heading "One command." [level=2] [ref=e173]
+        - paragraph [ref=e174]: Runs anywhere with Node.js 18+. No config file, no setup step.
+      - generic [ref=e175]:
+        - paragraph [ref=e176]: Recommended — no install required
+        - generic [ref=e177]:
+          - generic [ref=e178]: $ npx smart-gitignore
+          - button "Copy npx command" [ref=e179] [cursor=pointer]:
+            - img [ref=e180]
+            - text: Copy
+        - paragraph [ref=e183]: Or install globally
+        - generic [ref=e184]:
+          - generic [ref=e185]: $ npm install -g smart-gitignore
+          - button "Copy install command" [ref=e186] [cursor=pointer]:
+            - img [ref=e187]
+            - text: Copy
+        - paragraph [ref=e190]: Available options
+        - generic [ref=e191]:
+          - generic [ref=e192]:
+            - code [ref=e193]: "--dir <path>"
+            - generic [ref=e194]: Directory to scan. Defaults to CWD.
+          - generic [ref=e195]:
+            - code [ref=e196]: "--depth <n>"
+            - generic [ref=e197]: Scanner depth. Use ≥2 for monorepos.
+          - generic [ref=e198]:
+            - code [ref=e199]: "--force"
+            - generic [ref=e200]: Overwrite instead of merging.
+          - generic [ref=e201]:
+            - code [ref=e202]: "--verbose"
+            - generic [ref=e203]: Show detection and fetch steps.
+          - generic [ref=e204]:
+            - code [ref=e205]: "--timeout <ms>"
+            - generic [ref=e206]: Per-request HTTP timeout.
+          - generic [ref=e207]:
+            - code [ref=e208]: "--retries <n>"
+            - generic [ref=e209]: HTTP retry attempts on failure.
+    - generic [ref=e212]:
+      - paragraph [ref=e213]: Activity
+      - heading "Commit history." [level=2] [ref=e214]
+      - paragraph [ref=e215]: Live from the GitHub API — last 10 commits with the package version at each point.
+  - contentinfo [ref=e230]:
+    - generic [ref=e231]:
+      - paragraph [ref=e232]:
+        - text: smart-gitignore —
+        - link "MIT License" [ref=e233] [cursor=pointer]:
+          - /url: https://github.com/Otto-Schmitz/smart-gitignore/blob/main/LICENSE
+      - paragraph [ref=e234]:
+        - link "GitHub" [ref=e235] [cursor=pointer]:
+          - /url: https://github.com/Otto-Schmitz/smart-gitignore
+        - link "npm" [ref=e236] [cursor=pointer]:
+          - /url: https://www.npmjs.com/package/smart-gitignore
+        - link "Issues" [ref=e237] [cursor=pointer]:
+          - /url: https://github.com/Otto-Schmitz/smart-gitignore/issues
